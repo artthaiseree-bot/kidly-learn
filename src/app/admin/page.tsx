@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function AdminPage() {
   const [stories, setStories] = useState([
-    { id: 1, title: "กระต่ายกับเต่า", category: "นิทานคลาสสิก" },
+    { id: 1, title: "กระต่ายกับเต่า", category: "นิทานอีสป" },
     { id: 2, title: "ลูกหมูสามตัว", category: "นิทานคลาสสิก" }
   ]);
   const [title, setTitle] = useState("");
