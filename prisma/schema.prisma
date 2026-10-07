@@ -5,21 +5,22 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = env("TURSO_DATABASE_URL")
 }
 
 model User {
-  id        String     @id @default(cuid())
-  name      String?
-  email     String     @unique
-  password  String?
-  image     String?
-  role      String     @default("USER")
-  ageGroup  String?
-  favorites Favorite[]
-  accounts  Account[]
-  sessions  Session[]
-  createdAt DateTime   @default(now())
+  id            String       @id @default(cuid())
+  name          String?
+  email         String       @unique
+  emailVerified DateTime?    // ← เพิ่มใหม่สำหรับ Google Login
+  password      String?
+  image         String?
+  role          String       @default("USER")
+  ageGroup      String?
+  favorites     Favorite[]
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime     @default(now())
 }
 
 model Category {
@@ -102,7 +103,8 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -112,7 +114,8 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

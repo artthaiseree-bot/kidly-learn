@@ -1,31 +1,29 @@
 import type { NextAuthConfig } from "next-auth";
+import Google from "next-auth/providers/google";
 
-export const authConfig: NextAuthConfig = {
+// ไฟล์นี้ต้อง "เบา" เพราะ middleware ต้องใช้ ห้าม import Prisma เข้ามา
+export const authConfig = {
+  providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+  ],
   pages: {
-    signIn: "/signin",
+    signIn: "/signin",   // ถ้ายังไม่ login ให้เด้งมาหน้านี้
+    error: "/signin",
   },
-  providers: [],
+  session: { strategy: "jwt" },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const pathname = nextUrl.pathname;
-
-      // หน้าเหล่านี้อนุญาตให้ทุกคนเข้าชมได้ทันทีโดยไม่ต้องล็อกอิน
-      const isPublicPage = pathname === "/" || pathname.startsWith("/stories") || pathname.startsWith("/learn") || pathname.startsWith("/animations") || pathname.startsWith("/songs") || pathname.startsWith("/search");
-
-      // ถ้าเป็นหน้า signin และล็อกอินแล้ว ให้เด้งกลับหน้าแรก
-      if (pathname.startsWith("/signin")) {
-        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
-        return true;
+    async jwt({ token, user }) {
+      if (user) token.id = user.id;
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.sub) {
+        (session.user as any).id = token.sub;
       }
-
-      // ถ้าเป็นหน้าส่วนตัวเช่น /me บังคับว่าต้องล็อกอินถึงจะเข้าได้
-      if (pathname.startsWith("/me")) {
-        return isLoggedIn;
-      }
-
-      // หน้าอื่นๆ นอกเหนือจากนี้ อนุญาตให้ผ่านได้ปกติ
-      return true;
+      return session;
     },
   },
-};
+} satisfies NextAuthConfig;
