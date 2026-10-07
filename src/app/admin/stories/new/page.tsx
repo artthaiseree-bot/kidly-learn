@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { ArrowLeft, PlusCircle, BookOpen, FileText, FileArchive, Upload, Image as ImageIcon } from "lucide-react";
 
 export default function AddStoryPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("นิทานอีสป / ผจญภัย");
   const [description, setDescription] = useState("");
@@ -17,13 +20,20 @@ export default function AddStoryPage() {
   const [zipName, setZipName] = useState("");
   const [zipUrl, setZipUrl] = useState("");
 
-  useEffect(() => {
-    const userEmail = localStorage.getItem("userEmail") || "";
-    const isAdmin = userEmail.toLowerCase() === "artthaiseree@gmail.com" || userEmail.toLowerCase() === "admin@gmail.com";
-    if (!isAdmin) {
-      router.push("/");
-    }
-  }, [router]);
+  // ถ้าระบบกำลังเช็คสถานะล็อกอิน
+  if (status === "loading") {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <p className="text-sm text-slate-400">กำลังตรวจสอบสิทธิ์...</p>
+      </div>
+    );
+  }
+
+  // ถ้ายังไม่ล็อกอิน ให้ดีดไปหน้า signin
+  if (!session) {
+    router.push("/signin");
+    return null;
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,10 +83,10 @@ export default function AddStoryPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <button 
-        onClick={() => router.push("/admin/stories")} 
-        className="mb-4 flex items-center gap-1 text-xs font-bold text-pink-600 hover:underline"
+        onClick={() => router.push("/me")} 
+        className="mb-4 flex items-center gap-1 text-xs font-bold text-pink-600 hover:underline cursor-pointer"
       >
-        <ArrowLeft size={16} /> กลับไปหน้าจัดการนิทาน
+        <ArrowLeft size={16} /> กลับไปหน้าโปรไฟล์
       </button>
 
       <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
@@ -169,7 +179,7 @@ export default function AddStoryPage() {
 
           <button 
             type="submit" 
-            className="w-full mt-4 flex items-center justify-center gap-2 rounded-2xl bg-pink-600 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-pink-700"
+            className="w-full mt-4 flex items-center justify-center gap-2 rounded-2xl bg-pink-600 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-pink-700 cursor-pointer"
           >
             <PlusCircle size={18} /> บันทึกและเพิ่มนิทาน
           </button>

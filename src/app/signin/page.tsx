@@ -1,84 +1,43 @@
-"use client";
-import { useState } from "react";
-import { signIn } from "next-auth/react"; // ดึงระบบล็อกอินตัวจริงมาใช้
-import { Mail, ArrowRight, CheckCircle2 } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import Link from "next/link";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSendMagicLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setIsLoading(true);
-    // สั่งให้ NextAuth ยิงอีเมลผ่านปลั๊กอิน Resend ที่เราตั้งค่าไว้
-    await signIn("resend", { 
-      email, 
-      redirect: false, // ป้องกันการเปลี่ยนหน้า เพื่อให้โชว์ข้อความสำเร็จด้านล่าง
-      callbackUrl: "/" // เมื่อกดลิงก์จากในเมล ให้พาไปที่หน้าแรก
-    });
-    
-    setIsLoading(false);
-    setIsSubmitted(true);
-  };
-
   return (
-    <div className="flex min-h-[75vh] items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
-        {!isSubmitted ? (
-          <>
-            <h1 className="text-2xl font-bold text-slate-800 mb-2 text-center">
-              เข้าสู่ระบบนิทาน
-            </h1>
-            <p className="text-xs text-slate-500 text-center mb-6">
-              กรอกอีเมลเพื่อรับลิงก์สำหรับเข้าสู่ระบบ (ไม่ต้องใช้รหัสผ่าน)
-            </p>
-            
-            <form onSubmit={handleSendMagicLink} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">อีเมลของคุณ</label>
-                <div className="relative flex items-center">
-                  <Mail className="absolute left-3 text-slate-400" size={18} />
-                  <input 
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm focus:bg-white focus:outline-none focus:border-pink-500"
-                    placeholder="example@gmail.com"
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-              <button 
-                type="submit" 
-                disabled={isLoading}
-                className="w-full mt-2 flex items-center justify-center gap-2 rounded-2xl bg-pink-600 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-pink-700 disabled:opacity-70"
-              >
-                {isLoading ? "กำลังส่งลิงก์..." : "รับลิงก์เข้าสู่ระบบ"} <ArrowRight size={16} />
-              </button>
-            </form>
-          </>
-        ) : (
-          <div className="text-center py-6">
-            <CheckCircle2 className="mx-auto text-green-500 mb-4" size={60} />
-            <h2 className="text-xl font-bold text-slate-800 mb-2">ส่งอีเมลสำเร็จ!</h2>
-            <p className="text-sm text-slate-600 mb-6">
-              เราได้ส่งลิงก์เข้าสู่ระบบไปที่ <br/><span className="font-bold text-pink-600">{email}</span><br/> แล้วครับ
-            </p>
-            <p className="text-xs text-slate-500">
-              กรุณาเปิดกล่องจดหมายของคุณ (หรือโฟลเดอร์จดหมายขยะ) และคลิกที่ลิงก์เพื่อเข้าเว็บไซต์ได้เลย
-            </p>
-            <button 
-              onClick={() => setIsSubmitted(false)}
-              className="mt-6 text-xs text-pink-600 font-bold hover:underline"
-            >
-              แก้ไข / ลองใช้อีเมลอื่น
-            </button>
-          </div>
-        )}
+    <div className="min-h-[80vh] flex items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-sm border border-slate-100 text-center">
+        
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-pink-50 text-pink-600 shadow-inner">
+          <BookOpen size={32} />
+        </div>
+
+        <h1 className="text-xl font-bold text-slate-800 mb-2">Kids Learning Library</h1>
+        <p className="text-sm text-slate-500 mb-8">กรุณาเข้าสู่ระบบด้วยบัญชี Google เพื่อใช้งานเว็บไซต์</p>
+
+        {/* ใช้ลิงก์ตรงไปที่ API ของ NextAuth ส่งไปหน้าแรกทันทีโดยไม่ผ่าน Server Action ให้ปวดหัว */}
+        <Link
+          href="/api/auth/signin/google?callbackUrl=/"
+          className="w-full flex items-center justify-center gap-3 rounded-2xl bg-white border border-slate-200 py-3.5 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 cursor-pointer"
+        >
+          <svg className="h-5 w-5" viewBox="0 0 24 24">
+            <path
+              fill="#4285F4"
+              d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.14C3.15 21.32 7.22 24 12 24z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.62H1.18C.43 8.15 0 9.89 0 12s.43 3.85 1.18 5.38l4.09-3.14z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.62l4.09 3.14c.95-2.85 3.6-4.96 6.73-4.96z"
+            />
+          </svg>
+          เข้าสู่ระบบด้วย Google
+        </Link>
       </div>
     </div>
   );

@@ -1,16 +1,18 @@
-import NextAuth from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "@/lib/prisma" 
-import Resend from "next-auth/providers/resend"
+﻿import NextAuth from "next-auth"
 import { authConfig } from "./auth.config"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { prisma } from "./lib/prisma"
+import Google from "next-auth/providers/google"
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...authConfig, // ดึงกฎจากข้อ 1 มารวมด้วย
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
+
   adapter: PrismaAdapter(prisma),
+
   providers: [
-    Resend({
-      apiKey: process.env.RESEND_API_KEY,
-      from: "onboarding@resend.dev", 
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
 })

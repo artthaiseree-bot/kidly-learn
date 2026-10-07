@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { Home, BookOpen, Sparkles, Clapperboard, Music, Search, Heart, User, Shield, Menu, X } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Home, BookOpen, Sparkles, Clapperboard, Music, Search, Heart, User, Shield, Menu, X, LogOut } from "lucide-react";
 import clsx from "clsx";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const NAV = [
   { href: "/", label: "หน้าแรก", icon: Home },
@@ -19,6 +19,19 @@ export default function Navbar() {
   const path = usePathname();
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // ปิดเมนูป๊อปอัปเมื่อคลิกพื้นที่อื่นข้างนอก
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Hide Navbar in admin routes
   if (path?.startsWith("/admin")) return null;
@@ -50,7 +63,6 @@ export default function Navbar() {
           </div>
           <span className="leading-tight">
             <span className="block text-base font-extrabold md:text-lg">
-              {/* เปลี่ยนจาก Kids Learning Library เป็น นิทานแบ่งปันสุข พร้อมคงการไล่สี */}
               <span className="text-grape">นิทาน</span>
               <span className="text-sky2">แบ่งปัน</span>
               <span className="text-brand">สุข</span>
@@ -72,7 +84,7 @@ export default function Navbar() {
             <Search size={16} />
           </Link>
           
-          <Link href="/me" className="hidden items-center gap-1.5 rounded-full bg-brand-light px-3 py-2 text-xs font-bold text-brand sm:flex">
+          <Link href={session ? "/me" : "/signin"} className="hidden items-center gap-1.5 rounded-full bg-brand-light px-3 py-2 text-xs font-bold text-brand sm:flex">
             <Heart size={14} />ของฉัน
           </Link>
           
@@ -82,9 +94,52 @@ export default function Navbar() {
             </Link>
           )}
           
-          <Link href="/me" className="grid h-9 w-9 place-items-center rounded-full bg-brand text-white">
-            <User size={16} />
-          </Link>
+          {/* ส่วนปุ่มรูปคน + เมนูดรอปดาวน์ย่อย */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => {
+                if (!session) {
+                  // ถ้ายังไม่ล็อกอิน ให้พุ่งไปหน้า signin ทันที
+                  window.location.href = "/signin";
+                } else {
+                  // ถ้าล็อกอินแล้ว ให้เปิด/ปิดเมนูดรอปดาวน์
+                  setDropdownOpen(v => !v);
+                }
+              }}
+              className="grid h-9 w-9 place-items-center rounded-full bg-brand text-white overflow-hidden shadow-sm transition hover:opacity-90 cursor-pointer"
+            >
+              {session?.user?.image ? (
+                <img src={session.user.image} alt="Profile" className="h-full w-full object-cover" />
+              ) : (
+                <User size={16} />
+              )}
+            </button>
+
+            {/* Dropdown Menu ย่อย (แสดงเฉพาะตอนล็อกอินแล้วกดที่รูป) */}
+            {session && dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white py-2 shadow-xl border border-slate-100 z-50 text-left">
+                <div className="px-4 py-2 border-b border-slate-100">
+                  <p className="text-xs font-bold text-gray-800 truncate">{session.user?.name || "ผู้ใช้งาน"}</p>
+                  <p className="text-[10px] text-gray-400 truncate">{session.user?.email || ""}</p>
+                </div>
+                
+                <Link
+                  href="/me"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-pink-50 hover:text-brand transition"
+                >
+                  <User size={14} /> หน้าของฉัน / โปรไฟล์
+                </Link>
+
+                <button
+                  onClick={() => signOut({ callbackUrl: "/signin" })}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-red-500 hover:bg-red-50 transition text-left"
+                >
+                  <LogOut size={14} /> ออกจากระบบ
+                </button>
+              </div>
+            )}
+          </div>
           
           <button 
             onClick={() => setOpen(v => !v)} 

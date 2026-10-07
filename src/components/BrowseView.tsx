@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { auth } from "@/auth";
 import Hero from "./Hero";
 import Filters from "./Filters";
 import ContentGrid from "./ContentGrid";
