@@ -10,18 +10,22 @@ export const authConfig = {
     }),
   ],
   pages: {
-    signIn: "/signin",   // ถ้ายังไม่ login ให้เด้งมาหน้านี้
+    signIn: "/signin",  // ถ้ายัง login ให้เด้งมาหน้านี้
     error: "/signin",
   },
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.picture = user.image; // เก็บรูปลงใน Token ตอนล็อกอิน
+      }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token.sub) {
         (session.user as any).id = token.sub;
+        session.user.image = token.picture as string; // ส่งรูปต่อไปแสดงผลที่หน้าเว็บ
       }
       return session;
     },

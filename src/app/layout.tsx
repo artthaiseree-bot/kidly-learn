@@ -1,14 +1,7 @@
 import "./globals.css";
-import { Noto_Sans_Thai } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SessionProvider } from "next-auth/react";
-
-const thai = Noto_Sans_Thai({
-  subsets: ["thai", "latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-thai",
-});
 
 export const metadata = {
   title: "นิทานแบ่งปันสุข",
@@ -17,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="th" className={thai.variable}>
+    <html lang="th">
       <body className="min-h-screen text-ink antialiased">
         <div className="fixed inset-0 -z-20 bg-[url('/bg-library.jpg')] bg-cover bg-center bg-no-repeat" />
         <div className="fixed inset-0 -z-10 bg-gradient-to-b from-white/60 via-white/40 to-white/70" />
