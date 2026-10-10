@@ -40,16 +40,16 @@ export default function AnimationsPage() {
       filterDuration: "มากกว่า 10 นาที",
     },
     {
-      id: 14,
-      title: "กบในโลกกว้าง",
-      category: "นิทานแอนิเมชัน",
-      description: "เรื่องราวของเจ้ากบตัวน้อยที่ตัดสินใจกระโดดออกจากสระน้ำเดิมๆ เพื่อไปสำรวจโลกกว้างที่น่าตื่นเต้น",
-      link: "/video/frog-wide-world",
-      image: "https://img.youtube.com/vi/VEx02Ydp2pQ/hqdefault.jpg",
-      filterAge: "4-6 ปี",
+      id: 1,
+      title: "กบน้อยในโลกกว้าง", // อัปเดตชื่อเรื่อง
+      category: "ชีวิตสัตว์", // อัปเดตหมวดหมู่
+      description: "กบน้อยในโลกกว้าง", // อัปเดตคำอธิบาย
+      link: "/video/frogs-in-the-world", // อัปเดตลิงก์ไปยังหน้าวิดีโอที่จะสร้างใหม่
+      image: "https://img.youtube.com/vi/VEx02Ydp2pQ/hqdefault.jpg", // ดึงปกจาก YouTube
+      filterAge: "7-12 ปี",
       filterLanguage: "ไทย",
-      filterCategory: "นิทานแอนิเมชัน",
-      filterDuration: "5-10 นาที",
+      filterCategory: "สังคมและจริยธรรม", // จัดให้อยู่ในหมวดนี้
+      filterDuration: "ไม่เกิน 5 นาที",
     },
     {
       id: 1,

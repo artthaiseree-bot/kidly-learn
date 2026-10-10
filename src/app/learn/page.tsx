@@ -60,6 +60,18 @@ export default function LearnPage() {
       filterGroup: "รอบตัว",
       filterLanguage: "ไทย",
       filterType: "วิดีโอ",
+    },
+    {
+      id: 4,
+      title: "ชีวิตมดใต้ผืนโลก",
+      category: "ไทย",
+      description: "เรียนรู้เด็กๆ",
+      link: "/ebook/The-Lives-of-Ants-Beneath-the-Earth",
+      image: "/images/The-Lives-of-Ants-Beneath-the-Earth.png",
+      filterAge: "0-3 ปี",
+      filterGroup: "รอบตัว",
+      filterLanguage: "ไทย",
+      filterType: "วิดีโอ",
     }
   ];
 
